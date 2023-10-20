@@ -15,6 +15,10 @@ const arrLength = ref(startArr);
 let once = false
 let observer;
 
+onMounted(() => {
+  init();
+});
+
 const initInters = (targetEl, callback) => {
   let options = {
     root: document.querySelector(".hello"),
@@ -25,12 +29,6 @@ const initInters = (targetEl, callback) => {
   observer = new IntersectionObserver(callback, options);
   observer.observe(targetEl);
 };
-
-onMounted(() => {
-  init();
-});
-
-
 
 const init = () => {
   const firstEl = document.querySelector(".intersFirst");
@@ -75,7 +73,6 @@ const init = () => {
       }
     });
   };
-
 
   initInters(lastEl, callback);
 };
