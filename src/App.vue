@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUpdated, ref, watch, nextTick } from "vue";
+import { onMounted, ref } from "vue";
 const startArr = [...Array(30).keys()];
 const offset = 110
 const arrLength = ref(startArr);
