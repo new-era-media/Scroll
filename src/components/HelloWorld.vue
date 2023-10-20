@@ -1,26 +1,24 @@
 <template>
   p {{ arrLength }}
   <div class="hello">      
-    <div class="intersFirst">1</div>
-    <div class="block" v-for="(el, i) in arrLength" :key="el" :id="el">
-
-      <div class="intersLast" v-if="i === arrLength.length - 1">
-        {{ arrLength.length }}
-      </div>
-    </div>
+    <div class="intersFirst" />
+    <div class="block" v-for="(el, i) in arrLength" :key="el" :id="el"></div>
+    <div class="intersLast" />
   </div>
 </template>
 
 <script setup>
 import { onMounted, onUpdated, ref, watch, nextTick } from "vue";
-const xyu = [...Array(30).keys()];
-let arrLength = ref(xyu);
+const startArr = [...Array(30).keys()];
+const offset = 110
+const arrLength = ref(startArr);
+let once = false
 let observer;
 
 const initInters = (targetEl, callback) => {
   let options = {
     root: document.querySelector(".hello"),
-    rootMargin: "0px",
+    rootMargin: "1px",
     threshold: 1.0,
   };
 
@@ -32,41 +30,54 @@ onMounted(() => {
   init();
 });
 
-onUpdated(() => {
-})
+
 
 const init = () => {
   const firstEl = document.querySelector(".intersFirst");
-
-  const callbackForFirst = (entries, observer) => {
-    console.log('callbackForFirst', entries);
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        arrLength.value.unshift(arrLength.value.at(1)-1, arrLength.value.at(-1)-2, arrLength.value.at(-1)-3);
-        arrLength.value.splice(arrLength.length-1,1);
-        nextTick(() => {
-          init();
-        });
-      }
-    });
-  };
-
   const lastEl = document.querySelector(".intersLast");
 
-  const callbackForlast = (entries, observer) => {
-    entries.forEach((entry) => {
+  const callback = (entries, f,s,g) => {
+    entries.forEach(async (entry) => {
       if (entry.isIntersecting) {
-        observer.unobserve(lastEl);
-        arrLength.value.push(arrLength.value.at(-1)+1, arrLength.value.at(-1)+2);
-        arrLength.value.splice(0,1);
-        nextTick(() => {
-          init();
-        });
+        const mock = (timeout = 2000) => {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              const classEl = entry.target.getAttribute("class")
+              switch (classEl) {
+                 case 'intersFirst':
+                    arrLength.value.reverse()
+                    arrLength.value.push(arrLength.value.at(-1)-1, arrLength.value.at(-1)-2)
+                    arrLength.value.reverse()
+                    arrLength.value.splice(arrLength.value.length-2, 2);
+                    document.querySelector(".hello").scrollLeft = document.querySelector(".hello").scrollLeft + offset
+                  break
+                case 'intersLast':
+                  arrLength.value.push(arrLength.value.at(-1)+1, arrLength.value.at(-1)+2);
+                  arrLength.value.splice(0,2);
+                  document.querySelector(".hello").scrollLeft = document.querySelector(".hello").scrollLeft - offset
+
+                  if(!once) {
+                    once = true
+                    initInters(firstEl, callback);
+                  }
+                  break;
+              }
+              resolve()
+            }, timeout);
+          });
+        }
+              
+        try {
+          await mock()
+        } catch(e) {
+          console.log('err', e)
+        }
       }
     });
   };
 
-  initInters(lastEl, callbackForlast);
+
+  initInters(lastEl, callback);
 };
 </script>
 
