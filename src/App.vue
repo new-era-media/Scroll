@@ -43,11 +43,11 @@ const init = () => {
               const classEl = entry.target.getAttribute("class")
               switch (classEl) {
                  case 'intersFirst':
-                    arrLength.value.reverse()
-                    arrLength.value.push(arrLength.value.at(-1)-1, arrLength.value.at(-1)-2)
-                    arrLength.value.reverse()
-                    arrLength.value.splice(arrLength.value.length-2, 2);
-                    document.querySelector(".hello").scrollLeft = document.querySelector(".hello").scrollLeft + offset
+                  arrLength.value.reverse()
+                  arrLength.value.push(arrLength.value.at(-1)-1, arrLength.value.at(-1)-2)
+                  arrLength.value.reverse()
+                  arrLength.value.splice(arrLength.value.length-2, 2);
+                  document.querySelector(".hello").scrollLeft = document.querySelector(".hello").scrollLeft + offset
                   break
                 case 'intersLast':
                   arrLength.value.push(arrLength.value.at(-1)+1, arrLength.value.at(-1)+2);
